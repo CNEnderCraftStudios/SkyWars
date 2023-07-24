@@ -10,14 +10,20 @@ import cn.nukkit.blockentity.BlockEntityNameable;
 import cn.nukkit.command.ConsoleCommandSender;
 import cn.nukkit.entity.Entity;
 import cn.nukkit.entity.EntityHuman;
+import cn.nukkit.entity.item.EntityItem;
 import cn.nukkit.entity.item.EntityPrimedTNT;
 import cn.nukkit.event.EventHandler;
 import cn.nukkit.event.EventPriority;
 import cn.nukkit.event.Listener;
 import cn.nukkit.event.block.BlockBreakEvent;
 import cn.nukkit.event.block.BlockPlaceEvent;
-import cn.nukkit.event.entity.*;
+import cn.nukkit.event.entity.EntityDamageByEntityEvent;
+import cn.nukkit.event.entity.EntityDamageEvent;
+import cn.nukkit.event.entity.EntityExplodeEvent;
+import cn.nukkit.event.entity.EntityLevelChangeEvent;
 import cn.nukkit.event.inventory.CraftItemEvent;
+import cn.nukkit.event.inventory.InventoryOpenEvent;
+import cn.nukkit.event.inventory.InventoryPickupItemEvent;
 import cn.nukkit.event.inventory.InventoryTransactionEvent;
 import cn.nukkit.event.level.WeatherChangeEvent;
 import cn.nukkit.event.player.*;
@@ -63,10 +69,7 @@ import org.sobadfish.skywars.room.config.ItemConfig;
 import org.sobadfish.skywars.tools.Utils;
 
 import java.io.File;
-import java.util.ArrayList;
-import java.util.LinkedHashMap;
-import java.util.List;
-import java.util.Map;
+import java.util.*;
 
 /**
  * 游戏房间管理类
@@ -501,7 +504,7 @@ public class RoomManager implements Listener {
                                 if (h < 0) {
                                     h = 0;
                                 }
-                                playerInfo1.sendTip("&e目标: &c❤" + String.format("%.1f", h));
+                                playerInfo1.sendForceMessage("&b你击中了目标: &c剩余血量❤" + String.format("%.1f", h));
                             }
 
                         }
@@ -513,13 +516,15 @@ public class RoomManager implements Listener {
                     //TODO 免受TNT爆炸伤害
                     Entity entity = ((EntityDamageByEntityEvent) event).getDamager();
                     if (entity instanceof EntityPrimedTNT) {
-                        event.setDamage(room.roomConfig.tntDamage);
+                      //  event.setDamage(2);
                     }
+
+
                     //TODO 减免火球伤害
                     if(event.getCause() == EntityDamageEvent.DamageCause.ENTITY_EXPLOSION){
                         if(((EntityDamageByEntityEvent) event).getDamager() instanceof EntityHuman){
                             //TODO 证明是扔火球的玩家
-                            event.setDamage(2);
+                            //event.setDamage(2);
                         }
                     }
 
@@ -549,7 +554,17 @@ public class RoomManager implements Listener {
                             event.setCancelled();
                         }
                     }
-
+                    if(entity instanceof EntityHuman){
+                        if(entity.distance(event.getEntity()) < 3 && !event.isCancelled()){
+                            Item hand = ((EntityHuman) entity).getInventory().getItemInHand();
+                            if(hand.hasCompoundTag() && "秒人斧".equalsIgnoreCase(hand.getNamedTag().getString(NbtItemManager.TAG))){
+                                //秒杀
+                                playerInfo.death(event);
+                                event.setDamage(0f);
+                                return;
+                            }
+                        }
+                    }
 
                 }
                 if (event.getCause() == EntityDamageEvent.DamageCause.VOID) {
@@ -612,36 +627,17 @@ public class RoomManager implements Listener {
     }
 
 
-    /**
-     * 使用这个算法记录玩家攻击的实体以及手持的武器
-     * */
-    @EventHandler
-    public void onEntityInteractEntity(PlayerInteractEntityEvent event){
-        Player player = event.getPlayer();
-        PlayerInfo playerInfo = getPlayerInfo(player);
-        Item item = event.getItem();
-        if(item.hasCompoundTag() && "秒人斧".equalsIgnoreCase(item.getNamedTag().getString(NbtItemManager.TAG))) {
-            if (playerInfo != null) {
-                Entity entity = event.getEntity();
-                if (entity instanceof EntityHuman) {
-                    PlayerInfo entityInfo = getPlayerInfo((EntityHuman) entity);
-                    if (entityInfo != null) {
-                        player.getInventory().removeItem(item);
-                        playerInfo.death(new EntityDamageByEntityEvent(player,entity, EntityDamageEvent.DamageCause.ENTITY_ATTACK,0.5f));
-                    }
-
-                }
-
-            }
-        }
-    }
-
-
     @EventHandler
     public void onPlayerInteract(PlayerInteractEvent event){
+
         Player player = event.getPlayer();
+        Item item = event.getItem();
+
+        if (item != null && item.getId() == 513) {
+            player.getInventory().remove(item);
+            player.sendMessage("§c你不能使用盾牌");
+        }
         if(event.getAction() == PlayerInteractEvent.Action.RIGHT_CLICK_AIR || event.getAction() == PlayerInteractEvent.Action.RIGHT_CLICK_BLOCK) {
-            Item item = event.getItem();
 //            if(event.getBlock() instanceof BlockCraftingTable || event.getBlock() instanceof BlockBed){
 //                if(TotalManager.getRoomManager().getPlayerInfo(event.getPlayer()) != null){
 //                    event.setCancelled();
@@ -860,7 +856,7 @@ public class RoomManager implements Listener {
                 TotalManager.sendTipMessageToObject("&l"+Utils.writeLine(9,"&a﹉﹉"),player);
                 String line = String.format("%20s","");
                 player.sendMessage(line);
-                String inputTitle = "&b&l小游戏经验\n";
+                String inputTitle = "&b&l空岛战争排位分\n";
                 TotalManager.sendTipMessageToObject(FunctionManager.getCentontString(inputTitle,30),player);
                 TotalManager.sendTipMessageToObject(FunctionManager.getCentontString("&b等级 "+data.getLevel()+String.format("%"+inputTitle.length()+"s","")+" 等级 "+(data.getLevel() + 1)+"\n",30),player);
 
@@ -1057,7 +1053,8 @@ public class RoomManager implements Listener {
 
     @EventHandler
     public void onTeamVictory(TeamVictoryEvent event){
-        event.getTeamInfo().sendTitle("&e&l胜利!",5);
+        event.getTeamInfo().sendTitle("§6§kac§r §eSweet Victory! §6§kbd",5);
+        event.getTeamInfo().sendSubTitle("§b"+event.getTeamInfo().getTeamConfig().getNameColor()+event.getTeamInfo().getTeamConfig().getName()+"§a获得胜利!");
         String line = "■■■■■■■■■■■■■■■■■■■■■■■■■■";
         event.getRoom().sendTipMessage("&a"+line);
         event.getRoom().sendTipMessage(FunctionManager.getCentontString("&b游戏结束",line.length()));
@@ -1091,7 +1088,7 @@ public class RoomManager implements Listener {
     /**
      * 游戏地图的爆炸保护
      * */
-
+/*
     @EventHandler
     public void onEntityExplodeEvent(EntityExplodeEvent event){
         Level level = event.getPosition().getLevel();
@@ -1109,7 +1106,7 @@ public class RoomManager implements Listener {
             event.setBlockList(blocks);
         }
     }
-
+*/
     /**
      * 限制玩家放置方块事件
 
@@ -1217,12 +1214,35 @@ public class RoomManager implements Listener {
                 if(block.getId() == 14){
                     event.setDrops(new Item[]{Item.get(266)});
                 }
-                if(block.getId() == 74 || block.getId() == 73){
-                    //TODO 挖到红石
+                if(block.getId() == 56){
+                    Random random = new Random();
+                    int[] itemIds = {276,277,278,279,310,311,312,313};
+                    int randomIndex = random.nextInt(itemIds.length);
+                    int selectedItemId = itemIds[randomIndex];
+                    event.setDrops(new Item[]{Item.get(selectedItemId)});
+                }
+                if(block.getId() == 129){
+                    Random random = new Random();
+                    int minItemId = 256;
+                    int maxItemId = 346;
+                    int selectedItemId = random.nextInt(maxItemId - minItemId + 1) + minItemId;
+                    event.setDrops(new Item[]{Item.get(selectedItemId)});
+
+                }
+                if (block.getId() == 74 || block.getId() == 73) {
+                    Player player = event.getPlayer();
+                    // TODO 挖到红石
                     event.setDrops(new Item[0]);
                     info.addSound(Sound.BLOCK_END_PORTAL_FRAME_FILL);
-                    info.getPlayer().addEffect(Effect.getEffect(10).setDuration(100));
 
+                    Effect currentEffect = player.getEffect(22);
+                    if (currentEffect != null) {
+                        int currentLevel = currentEffect.getAmplifier();
+                        player.removeEffect(22);
+                        player.addEffect(Effect.getEffect(22).setAmplifier(currentLevel + 1).setDuration(Integer.MAX_VALUE));
+                    } else {
+                        player.addEffect(Effect.getEffect(22).setAmplifier(0).setDuration(Integer.MAX_VALUE));
+                    }
                 }
             }
         }
@@ -1334,5 +1354,16 @@ public class RoomManager implements Listener {
         });
 
     }
-
-}
+    @EventHandler
+    public void onInventoryTransaction(InventoryTransactionEvent event) {
+        Inventory inventory = event.getTransaction().getSource().getInventory();
+        for (InventoryAction action : event.getTransaction().getActions()) {
+            if (action.getSourceItem().getId() == 513) {
+                inventory.removeItem(action.getSourceItem());
+                event.setCancelled(true);
+                event.getTransaction().getSource().sendMessage("§c为了保证游戏的公平你不能使用盾牌");
+            }
+        }
+    }
+    }
+    

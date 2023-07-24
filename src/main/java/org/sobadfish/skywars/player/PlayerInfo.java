@@ -6,8 +6,7 @@ import cn.nukkit.entity.Entity;
 import cn.nukkit.entity.EntityHuman;
 import cn.nukkit.event.entity.EntityDamageByEntityEvent;
 import cn.nukkit.event.entity.EntityDamageEvent;
-import cn.nukkit.item.Item;
-import cn.nukkit.item.ItemColorArmor;
+import cn.nukkit.item.*;
 import cn.nukkit.level.Level;
 import cn.nukkit.level.Location;
 import cn.nukkit.level.Position;
@@ -574,7 +573,7 @@ public class PlayerInfo {
         }
         if(min > 0){
 
-            return mi+":"+sss;
+            return mi+":"+sss;// STOPSHIP: 2023/7/14 stop
         }else{
             return "00:"+sss+"";
         }
@@ -588,21 +587,21 @@ public class PlayerInfo {
             levelName = " -- ";
         }
         SimpleDateFormat format = new SimpleDateFormat("yyyy/MM/dd");
-        lore.add("&7"+format.format(new Date()));
-        lore.add("游戏模式: &a"+levelName);
+        //lore.add("&7"+format.format(new Date()));
+        //lore.add("游戏模式: &a"+levelName);
 
-        lore.add(" ");
+        //lore.add(" ");
         if(isWait){
-            lore.add("玩家数: &a"+gameRoom.getPlayerInfos().size()+" &r/&a "+gameRoom.getRoomConfig().getMaxPlayerSize());
-            lore.add("等待中....");
-            lore.add("   ");
+            lore.add("\uE1E0&a"+gameRoom.getPlayerInfos().size()+" &r/&a "+gameRoom.getRoomConfig().getMaxPlayerSize());
+            //lore.add("等待中....");
+            //lore.add("   ");
 
         }else{
 
-            lore.add("游戏结束: &a"+formatTime1(getGameRoom().loadTime));
-            lore.add("    ");
-            lore.add("箱子刷新: &a"+formatTime1(gameRoom.roomConfig.resetTime - gameRoom.worldInfo.resetTime));
-            lore.add("     ");
+
+            //lore.add("    ");
+
+            //lore.add("     ");
 
 
             if(gameRoom.roomConfig.teamConfigs.size() > 1){
@@ -611,27 +610,28 @@ public class PlayerInfo {
                     if(getTeamInfo() != null && getTeamInfo().equals(teamInfo)){
                         me = "&7(我)";
                     }
-                    lore.add("◎ "+ teamInfo +": &r  &c"+teamInfo.getLivePlayer().size()+" "+me);
+                   // lore.add("◎ "+ teamInfo +": &r  &c"+teamInfo.getLivePlayer().size()+" "+me);
                 }
             }else{
-                TeamInfo teamInfo = gameRoom.getTeamInfos().get(0);
-                lore.add("    ");
-                lore.add(" 存活人数: &a "+teamInfo.getLivePlayer().size() +" &7/&a "+teamInfo.getTeamPlayers().size());
+
             }
-
-            lore.add("       ");
-            lore.add("&b击杀数: &a"+killCount);
-            lore.add("&e助攻数: &a"+assists);
-
-            lore.add("        ");
+            TeamInfo teamInfo = gameRoom.getTeamInfos().get(0);
+            //lore.add("    ");
+            lore.add("\uE1E0&a"+gameRoom.getPlayerInfos().size());
+            lore.add("\uE1E6&a"+formatTime1(gameRoom.roomConfig.resetTime - gameRoom.worldInfo.resetTime));
+            //lore.add("       ");
+            lore.add("\uE1FD&a"+killCount);
+            //lore.add("&e助攻数: &a"+assists);
+            lore.add("\uE1FC&a"+formatTime1(getGameRoom().loadTime));
+            //lore.add("        ");
         }
         Object obj = TotalManager.getConfig().get("game-logo");
         if(obj instanceof List){
             for(Object s : (List<?>)obj){
-                lore.add(s.toString());
+               // lore.add(s.toString());
             }
         }else{
-            lore.add(TotalManager.getConfig().getString("game-logo","&l&cT&6o&eC&ar&ba&9f&dt"));
+           // lore.add(TotalManager.getConfig().getString("game-logo","&l&cT&6o&eC&ar&ba&9f&dt"));
         }
         return lore;
     }
@@ -647,12 +647,30 @@ public class PlayerInfo {
         //TODO 玩家进入房间后每秒就会调用这个方法
         if(loadWaitTime > 0){
             loadWaitTime--;
-            sendTitle("",loadWaitTime);
-            sendSubTitle("&e"+loadWaitTime+" &6秒后开始");
+            switch (loadWaitTime){
+                case 10: sendTitle("");sendActionBar("&e游戏开始 » ▌▌▌▌▌▌▌▌▌▌ &r"+loadWaitTime);break;
+                case 9: sendActionBar("&e游戏开始 ≫ ▌▌▌▌▌▌▌▌▌&7▌ &r"+loadWaitTime);break;
+                case 8: sendActionBar("&e游戏开始 ≫ ▌▌▌▌▌▌▌▌&7▌▌ &r"+loadWaitTime);break;
+                case 7: sendActionBar("&e游戏开始 ≫ ▌▌▌▌▌▌▌&7▌▌▌ &r"+loadWaitTime);break;
+                case 6: sendActionBar("&e游戏开始 ≫ ▌▌▌▌▌▌&7▌▌▌▌ &r"+loadWaitTime);break;
+                case 5: sendActionBar("&e游戏开始 ≫ ▌▌▌▌▌&7▌▌▌▌▌ &r"+loadWaitTime);break;
+                case 4: sendActionBar("&e游戏开始 ≫ ▌▌▌▌&7▌▌▌▌▌▌ &r"+loadWaitTime);break;
+                case 3: sendActionBar("&e游戏开始 ≫ &c▌▌▌&7▌▌▌▌▌▌▌ &r"+loadWaitTime);addSound(Sound.RANDOM_TOAST);break;
+                case 2: sendActionBar("&e游戏开始 ≫ &c▌▌&7▌▌▌▌▌▌▌▌ &r"+loadWaitTime);addSound(Sound.RANDOM_TOAST);break;
+                case 1: sendActionBar("&e游戏开始 ≫ &c▌&7▌▌▌▌▌▌▌▌▌ &r"+loadWaitTime);addSound(Sound.RANDOM_TOAST);break;
+                default:
+                    String gamemode = TotalManager.getMenuRoomManager().getNameByRoom(gameRoom.getRoomConfig());
+                    sendTitle("&4"+gamemode);break;
+
+            }
+            /*sendTitle("",loadWaitTime);
+            sendSubTitle("&e"+loadWaitTime+" &6秒后开始");*/
             if(loadWaitTime <= 0){
                 if(player.isImmobile()){
                     player.setImmobile(false);
-                    sendTitle("&a开始!");
+                    //sendTitle("&a》 游戏开始 《");
+                    player.getInventory().addItem(new ItemPickaxeIron());
+
                 }
             }
         }

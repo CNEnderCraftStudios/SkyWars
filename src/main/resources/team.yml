@@ -1,5 +1,126 @@
 team:
-  - name: ""
+  - name: "Team#1"
+    nameColor: "&c"
+    blockWoolColor: "35:14"
+    canPvp: true
+    inventory:
+      armor: []
+      inventory: []
+    rgb:
+      r: 255
+      g: 0
+      b: 0
+  - name: "Team#2"
+    nameColor: "&c"
+    blockWoolColor: "35:14"
+    canPvp: true
+    inventory:
+      armor: []
+      inventory: []
+    rgb:
+      r: 255
+      g: 0
+      b: 0
+  - name: "Team#3"
+    nameColor: "&c"
+    blockWoolColor: "35:14"
+    canPvp: true
+    inventory:
+      armor: []
+      inventory: []
+    rgb:
+      r: 255
+      g: 0
+      b: 0
+  - name: "Team#4"
+    nameColor: "&c"
+    blockWoolColor: "35:14"
+    canPvp: true
+    inventory:
+      armor: []
+      inventory: []
+    rgb:
+      r: 255
+      g: 0
+      b: 0
+  - name: "Team#5"
+    nameColor: "&c"
+    blockWoolColor: "35:14"
+    canPvp: true
+    inventory:
+      armor: []
+      inventory: []
+    rgb:
+      r: 255
+      g: 0
+      b: 0
+  - name: "Team#6"
+    nameColor: "&c"
+    blockWoolColor: "35:14"
+    canPvp: true
+    inventory:
+      armor: []
+      inventory: []
+    rgb:
+      r: 255
+      g: 0
+      b: 0
+  - name: "Team#7"
+    nameColor: "&c"
+    blockWoolColor: "35:14"
+    canPvp: true
+    inventory:
+      armor: []
+      inventory: []
+    rgb:
+      r: 255
+      g: 0
+      b: 0
+  - name: "Team#8"
+    nameColor: "&c"
+    blockWoolColor: "35:14"
+    canPvp: true
+    inventory:
+      armor: []
+      inventory: []
+    rgb:
+      r: 255
+      g: 0
+      b: 0
+  - name: "Team#9"
+    nameColor: "&c"
+    blockWoolColor: "35:14"
+    canPvp: true
+    inventory:
+      armor: []
+      inventory: []
+    rgb:
+      r: 255
+      g: 0
+      b: 0
+  - name: "Team#10"
+    nameColor: "&c"
+    blockWoolColor: "35:14"
+    canPvp: true
+    inventory:
+      armor: []
+      inventory: []
+    rgb:
+      r: 255
+      g: 0
+      b: 0
+  - name: "Team#11"
+    nameColor: "&c"
+    blockWoolColor: "35:14"
+    canPvp: true
+    inventory:
+      armor: []
+      inventory: []
+    rgb:
+      r: 255
+      g: 0
+      b: 0
+  - name: "Team#12"
     nameColor: "&c"
     blockWoolColor: "35:14"
     canPvp: true

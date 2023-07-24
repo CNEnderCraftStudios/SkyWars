@@ -1,10 +1,10 @@
 name: SkyWars
 main: org.sobadfish.skywars.SkyWarsMain
-version: 1.1.3
+version: 2.0-build#1
 api:
   - 1.0.11
   - 3.0.0
-author: sobadfish
+author: sobadfish & EnderCraft DEV Team
 load: POSTWORLD
 description: "空岛战争小游戏"
 
