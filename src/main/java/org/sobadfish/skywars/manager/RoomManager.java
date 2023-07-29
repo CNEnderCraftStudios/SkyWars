@@ -10,7 +10,6 @@ import cn.nukkit.blockentity.BlockEntityNameable;
 import cn.nukkit.command.ConsoleCommandSender;
 import cn.nukkit.entity.Entity;
 import cn.nukkit.entity.EntityHuman;
-import cn.nukkit.entity.item.EntityItem;
 import cn.nukkit.entity.item.EntityPrimedTNT;
 import cn.nukkit.event.EventHandler;
 import cn.nukkit.event.EventPriority;
@@ -19,11 +18,8 @@ import cn.nukkit.event.block.BlockBreakEvent;
 import cn.nukkit.event.block.BlockPlaceEvent;
 import cn.nukkit.event.entity.EntityDamageByEntityEvent;
 import cn.nukkit.event.entity.EntityDamageEvent;
-import cn.nukkit.event.entity.EntityExplodeEvent;
 import cn.nukkit.event.entity.EntityLevelChangeEvent;
 import cn.nukkit.event.inventory.CraftItemEvent;
-import cn.nukkit.event.inventory.InventoryOpenEvent;
-import cn.nukkit.event.inventory.InventoryPickupItemEvent;
 import cn.nukkit.event.inventory.InventoryTransactionEvent;
 import cn.nukkit.event.level.WeatherChangeEvent;
 import cn.nukkit.event.player.*;
@@ -77,7 +73,6 @@ import java.util.*;
  * 房间事件监听
  *
  * @author Sobadfish
- * @date 2022/9/9
  */
 public class RoomManager implements Listener {
 
@@ -1365,5 +1360,6 @@ public class RoomManager implements Listener {
             }
         }
     }
-    }
+
+        }
     

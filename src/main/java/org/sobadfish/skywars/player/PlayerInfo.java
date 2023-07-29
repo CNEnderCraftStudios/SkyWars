@@ -4,6 +4,7 @@ import cn.nukkit.Player;
 import cn.nukkit.Server;
 import cn.nukkit.entity.Entity;
 import cn.nukkit.entity.EntityHuman;
+import cn.nukkit.entity.mob.EntityWither;
 import cn.nukkit.event.entity.EntityDamageByEntityEvent;
 import cn.nukkit.event.entity.EntityDamageEvent;
 import cn.nukkit.item.*;
@@ -11,9 +12,12 @@ import cn.nukkit.level.Level;
 import cn.nukkit.level.Location;
 import cn.nukkit.level.Position;
 import cn.nukkit.level.Sound;
+import cn.nukkit.level.format.FullChunk;
 import cn.nukkit.math.BlockFace;
 import cn.nukkit.math.Vector3;
+import cn.nukkit.nbt.tag.CompoundTag;
 import cn.nukkit.potion.Effect;
+import cn.nukkit.scheduler.Task;
 import cn.nukkit.utils.BlockColor;
 import cn.nukkit.utils.TextFormat;
 import de.theamychan.scoreboard.api.ScoreboardAPI;
@@ -37,6 +41,8 @@ import java.util.*;
 public class PlayerInfo {
 
     public EntityHuman player;
+
+    private int countdownTime = 20;
 
     public boolean isSpawnFire;
 
@@ -540,6 +546,7 @@ public class PlayerInfo {
         return teamName+playerName;
     }
 
+
     public TeamInfo getTeamInfo() {
         return teamInfo;
     }
@@ -580,10 +587,10 @@ public class PlayerInfo {
 
     }
 
-    private ArrayList<String> getLore(boolean isWait){
+    private ArrayList<String> getLore(boolean isWait) {
         ArrayList<String> lore = new ArrayList<>();
         String levelName = TotalManager.getMenuRoomManager().getNameByRoom(gameRoom.getRoomConfig());
-        if(levelName == null){
+        if (levelName == null) {
             levelName = " -- ";
         }
         SimpleDateFormat format = new SimpleDateFormat("yyyy/MM/dd");
@@ -591,12 +598,12 @@ public class PlayerInfo {
         //lore.add("游戏模式: &a"+levelName);
 
         //lore.add(" ");
-        if(isWait){
-            lore.add("\uE1E0&a"+gameRoom.getPlayerInfos().size()+" &r/&a "+gameRoom.getRoomConfig().getMaxPlayerSize());
+        if (isWait) {
+            lore.add("\uE1E0&a" + gameRoom.getPlayerInfos().size() + " &r/&a " + gameRoom.getRoomConfig().getMaxPlayerSize());
             //lore.add("等待中....");
             //lore.add("   ");
 
-        }else{
+        } else {
 
 
             //lore.add("    ");
@@ -604,34 +611,58 @@ public class PlayerInfo {
             //lore.add("     ");
 
 
-            if(gameRoom.roomConfig.teamConfigs.size() > 1){
-                for(TeamInfo teamInfo: gameRoom.getTeamInfos()){
+            if (loadWaitTime < 1) {
+                if (gameRoom.roomConfig.teamConfigs.size() > 1) {
+                /*for(TeamInfo teamInfo: gameRoom.getTeamInfos()){
                     String me = "";
                     if(getTeamInfo() != null && getTeamInfo().equals(teamInfo)){
                         me = "&7(我)";
                     }
-                   // lore.add("◎ "+ teamInfo +": &r  &c"+teamInfo.getLivePlayer().size()+" "+me);
-                }
-            }else{
+                    lore.add("◎ "+ teamInfo +": &r  &c"+teamInfo.getLivePlayer().size()+" "+me);
+                }*/
+                    StringBuilder s = new StringBuilder();
 
+                    for (TeamInfo teamInfo : gameRoom.getTeamInfos()) {
+                        if (!teamInfo.isClose()) {
+                            //s.append(teamInfo.getTeamConfig().getNameColor());
+                            s.append(teamInfo.getTeamConfig().getNameUnicode());
+                        }
+                    }
+                    if (this.teamInfo != null) {
+                        //lore.add(this.teamInfo+"队".toString());
+                        lore.add(this.teamInfo.getTeamConfig().getNameUnicode() + " "
+                                + teamInfo.getTeamConfig().getNameColor()
+                                + teamInfo);
+                    } else {
+                        lore.add("\uE1FE");
+                    }
+
+
+                    //lore.add(this.teamInfo+"队".toString());
+                    lore.add(s.toString());
+
+                } else {
+                    TeamInfo teamInfo = gameRoom.getTeamInfos().get(0);
+                    //lore.add("    ");
+                    lore.add(" 存活人数: &a " + teamInfo.getLivePlayer().size() + " &7/&a " + teamInfo.getTeamPlayers().size());
+                }
+
+                lore.add("\uE1E6&a" + formatTime1(gameRoom.roomConfig.resetTime - gameRoom.worldInfo.resetTime));
+                //lore.add("       ");
+                lore.add("\uE1FD&a" + killCount);
+                //lore.add("&e助攻数: &a"+assists);
+                lore.add("\uE1FC&a" + formatTime1(getGameRoom().loadTime));
+                //lore.add("        ");
             }
-            TeamInfo teamInfo = gameRoom.getTeamInfos().get(0);
-            //lore.add("    ");
-            lore.add("\uE1E0&a"+gameRoom.getPlayerInfos().size());
-            lore.add("\uE1E6&a"+formatTime1(gameRoom.roomConfig.resetTime - gameRoom.worldInfo.resetTime));
-            //lore.add("       ");
-            lore.add("\uE1FD&a"+killCount);
-            //lore.add("&e助攻数: &a"+assists);
-            lore.add("\uE1FC&a"+formatTime1(getGameRoom().loadTime));
-            //lore.add("        ");
-        }
-        Object obj = TotalManager.getConfig().get("game-logo");
-        if(obj instanceof List){
-            for(Object s : (List<?>)obj){
-               // lore.add(s.toString());
+            Object obj = TotalManager.getConfig().get("game-logo");
+            if (obj instanceof List) {
+                for (Object s : (List<?>) obj) {
+                    // lore.add(s.toString());
+                }
+            } else {
+                // lore.add(TotalManager.getConfig().getString("game-logo","&l&cT&6o&eC&ar&ba&9f&dt"));
             }
-        }else{
-           // lore.add(TotalManager.getConfig().getString("game-logo","&l&cT&6o&eC&ar&ba&9f&dt"));
+            return lore;
         }
         return lore;
     }
@@ -648,7 +679,8 @@ public class PlayerInfo {
         if(loadWaitTime > 0){
             loadWaitTime--;
             switch (loadWaitTime){
-                case 10: sendTitle("");sendActionBar("&e游戏开始 » ▌▌▌▌▌▌▌▌▌▌ &r"+loadWaitTime);break;
+                case 10: sendTitle("");
+                sendActionBar("&e游戏开始 » ▌▌▌▌▌▌▌▌▌▌ &r"+loadWaitTime);break;
                 case 9: sendActionBar("&e游戏开始 ≫ ▌▌▌▌▌▌▌▌▌&7▌ &r"+loadWaitTime);break;
                 case 8: sendActionBar("&e游戏开始 ≫ ▌▌▌▌▌▌▌▌&7▌▌ &r"+loadWaitTime);break;
                 case 7: sendActionBar("&e游戏开始 ≫ ▌▌▌▌▌▌▌&7▌▌▌ &r"+loadWaitTime);break;
@@ -659,21 +691,20 @@ public class PlayerInfo {
                 case 2: sendActionBar("&e游戏开始 ≫ &c▌▌&7▌▌▌▌▌▌▌▌ &r"+loadWaitTime);addSound(Sound.RANDOM_TOAST);break;
                 case 1: sendActionBar("&e游戏开始 ≫ &c▌&7▌▌▌▌▌▌▌▌▌ &r"+loadWaitTime);addSound(Sound.RANDOM_TOAST);break;
                 default:
-                    String gamemode = TotalManager.getMenuRoomManager().getNameByRoom(gameRoom.getRoomConfig());
-                    sendTitle("&4"+gamemode);break;
+                    String mode = TotalManager.getMenuRoomManager().getNameByRoom(gameRoom.getRoomConfig());
+                    sendTitle("&4"+mode);break;
 
             }
             /*sendTitle("",loadWaitTime);
             sendSubTitle("&e"+loadWaitTime+" &6秒后开始");*/
-            if(loadWaitTime <= 0){
-                if(player.isImmobile()){
+            if(loadWaitTime <= 0) {
+                if (player.isImmobile()) {
                     player.setImmobile(false);
                     //sendTitle("&a》 游戏开始 《");
                     player.getInventory().addItem(new ItemPickaxeIron());
-
+                }
                 }
             }
-        }
         if (!isWatch()) {
             if (getPlayer().getInventory().getItemInHand().getId() == 345) {
                 //拿着指南针
@@ -705,9 +736,6 @@ public class PlayerInfo {
             damageTime--;
         }else{
             damageByInfo = null;
-        }
-        if(damageByInfo != null){
-            sendTip(damageByInfo+"  &a"+damageByInfo.getPlayer().getHealth()+" / "+damageByInfo.getPlayer().getMaxHealth());
         }
 
         //死亡倒计时
@@ -772,6 +800,7 @@ public class PlayerInfo {
 
     }
 
+
     public enum PlayerType{
         /**
          * WAIT: 等待 START: 开始 DEATH: 死亡(等待复活)  LEAVE: 离开 WATCH 观察(真正的死亡)
@@ -806,14 +835,15 @@ public class PlayerInfo {
         if(getGameRoom().getWorldInfo().getConfig().getGameWorld() == null){
             return;
         }
-        //掉落物品
+        /*掉落物品
         if(gameRoom != null){
             if(gameRoom.getRoomConfig().isDeathDrop()){
                 for(Item item: player.getInventory().getContents().values()){
-                    player.level.dropItem(player,item,new Vector3(0,0.5,0));
+                    player.level.dropItem(player,item,new Vector3(0,80,0));
                 }
             }
         }
+        */
         if(gameRoom != null && gameRoom.roomConfig.reSpawnTime > 0) {
             if (getPlayer() instanceof Player) {
                 ((Player) getPlayer()).setGamemode(3);
@@ -821,11 +851,12 @@ public class PlayerInfo {
             player.teleport(getGameRoom().worldInfo.getConfig().getGameWorld().getSafeSpawn());
             Position position = teamInfo.getSpawnLocation();
             player.teleport(new Position(player.x, position.y + 64, player.z, getLevel()));
-            sendTitle("&c你死了",2);
+            sendTitle("&c糟糕，你被淘汰了",10);
             playerType = PlayerType.DEATH;
         }else{
             if (getPlayer() instanceof Player) {
                 ((Player) getPlayer()).setGamemode(3);
+                getPlayer().addEffect(Effect.getEffect(14).setAmplifier(0).setDuration(Integer.MAX_VALUE));
             }
 
 
@@ -868,12 +899,12 @@ public class PlayerInfo {
                         gameRoom.sendMessage(this + " &e被 &r" + info + " "+killInfo+"了。");
                     }
                 } else {
-                    gameRoom.sendMessage(this + " &e被 &r" + entity.getName() + " 击败了");
+                    gameRoom.sendMessage( entity.getName()+ " \uE1FD &r" + this);
                 }
             } else {
                 if(damageByInfo != null){
                     addKill(damageByInfo);
-                    gameRoom.sendMessage(this + " &e被 &r" + damageByInfo + " 击败了");
+                    gameRoom.sendMessage( damageByInfo+ " \uE1FD &r" + this );
                 }else {
                     String deathInfo = "&e死了";
                     switch (event.getCause()){

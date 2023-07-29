@@ -4,10 +4,7 @@ package org.sobadfish.skywars.manager;
 
 import cn.nukkit.item.Item;
 import cn.nukkit.nbt.tag.CompoundTag;
-import org.sobadfish.skywars.item.nbt.FireBall;
-import org.sobadfish.skywars.item.nbt.INbtItem;
-import org.sobadfish.skywars.item.nbt.KillerAxe;
-import org.sobadfish.skywars.item.nbt.PointPlayer;
+import org.sobadfish.skywars.item.nbt.*;
 
 
 import java.util.LinkedHashMap;

@@ -1,8 +1,9 @@
 team:
-  - name: "Team#1"
+  - name: "红队"
     nameColor: "&c"
+    nameUnicode: ""
     blockWoolColor: "35:14"
-    canPvp: true
+    canPvp: false
     inventory:
       armor: []
       inventory: []
@@ -10,10 +11,11 @@ team:
       r: 255
       g: 0
       b: 0
-  - name: "Team#2"
-    nameColor: "&c"
+  - name: "深蓝队"
+    nameColor: "&1"
+    nameUnicode: ""
     blockWoolColor: "35:14"
-    canPvp: true
+    canPvp: false
     inventory:
       armor: []
       inventory: []
@@ -21,10 +23,11 @@ team:
       r: 255
       g: 0
       b: 0
-  - name: "Team#3"
-    nameColor: "&c"
+  - name: "黄队"
+    nameColor: "&e"
+    nameUnicode: ""
     blockWoolColor: "35:14"
-    canPvp: true
+    canPvp: false
     inventory:
       armor: []
       inventory: []
@@ -32,10 +35,11 @@ team:
       r: 255
       g: 0
       b: 0
-  - name: "Team#4"
-    nameColor: "&c"
+  - name: "浅绿队"
+    nameColor: "&a"
+    nameUnicode: ""
     blockWoolColor: "35:14"
-    canPvp: true
+    canPvp: false
     inventory:
       armor: []
       inventory: []
@@ -43,10 +47,11 @@ team:
       r: 255
       g: 0
       b: 0
-  - name: "Team#5"
-    nameColor: "&c"
+  - name: "浅紫队"
+    nameColor: "&d"
+    nameUnicode: ""
     blockWoolColor: "35:14"
-    canPvp: true
+    canPvp: false
     inventory:
       armor: []
       inventory: []
@@ -54,10 +59,11 @@ team:
       r: 255
       g: 0
       b: 0
-  - name: "Team#6"
-    nameColor: "&c"
+  - name: "浅蓝队"
+    nameColor: "&3"
+    nameUnicode: ""
     blockWoolColor: "35:14"
-    canPvp: true
+    canPvp: false
     inventory:
       armor: []
       inventory: []
@@ -65,10 +71,11 @@ team:
       r: 255
       g: 0
       b: 0
-  - name: "Team#7"
-    nameColor: "&c"
+  - name: "橙队"
+    nameColor: "&6"
+    nameUnicode: ""
     blockWoolColor: "35:14"
-    canPvp: true
+    canPvp: false
     inventory:
       armor: []
       inventory: []
@@ -76,10 +83,11 @@ team:
       r: 255
       g: 0
       b: 0
-  - name: "Team#8"
-    nameColor: "&c"
+  - name: "浅灰队"
+    nameColor: "&7"
+    nameUnicode: ""
     blockWoolColor: "35:14"
-    canPvp: true
+    canPvp: false
     inventory:
       armor: []
       inventory: []
@@ -87,10 +95,11 @@ team:
       r: 255
       g: 0
       b: 0
-  - name: "Team#9"
-    nameColor: "&c"
+  - name: "深紫队"
+    nameColor: "&5"
+    nameUnicode: ""
     blockWoolColor: "35:14"
-    canPvp: true
+    canPvp: false
     inventory:
       armor: []
       inventory: []
@@ -98,10 +107,11 @@ team:
       r: 255
       g: 0
       b: 0
-  - name: "Team#10"
-    nameColor: "&c"
+  - name: "深绿队"
+    nameColor: "&2"
+    nameUnicode: ""
     blockWoolColor: "35:14"
-    canPvp: true
+    canPvp: false
     inventory:
       armor: []
       inventory: []
@@ -109,10 +119,11 @@ team:
       r: 255
       g: 0
       b: 0
-  - name: "Team#11"
-    nameColor: "&c"
+  - name: "深灰队"
+    nameColor: "&8"
+    nameUnicode: ""
     blockWoolColor: "35:14"
-    canPvp: true
+    canPvp: false
     inventory:
       armor: []
       inventory: []
@@ -120,10 +131,11 @@ team:
       r: 255
       g: 0
       b: 0
-  - name: "Team#12"
-    nameColor: "&c"
+  - name: "青队"
+    nameColor: "&b"
+    nameUnicode: ""
     blockWoolColor: "35:14"
-    canPvp: true
+    canPvp: false
     inventory:
       armor: []
       inventory: []
